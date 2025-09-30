@@ -37,7 +37,7 @@ resource "aws_security_group" "ollama_sg" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_access_ollama" {
   description       = "Give access to ollama"
-  cidr_ipv4         = "179.6.164.239/32" # Change this with your IP
+  cidr_ipv4         = "0.0.0.0/0" # Change this with your IP
   cidr_ipv6         = null
   ip_protocol       = "-1"
   security_group_id = aws_security_group.ollama_sg.id
