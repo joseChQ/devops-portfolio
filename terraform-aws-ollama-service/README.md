@@ -1,93 +1,63 @@
 # DevOps Project - Ollama Server with LLMs
 
-This project demonstrates how to set up an **Ollama server** on AWS to run and experiment with different Large Language Models (LLMs).  
-In this example, we focus on the **gpt-oss-20b** model, available on [Hugging Face](https://huggingface.co/openai/gpt-oss-20b).  
-The setup uses a **Deep Learning AMI** and an **EC2 g6.xlarge** instance with GPU support.
+This project demonstrates how to deploy an **Ollama server** on AWS to run and experiment with different **Large Language Models (LLMs)**.  
+In this example, we use the **gpt-oss-20b** model (available on [Hugging Face](https://huggingface.co/openai/gpt-oss-20b)).
+
+The infrastructure is created using **Terraform**, including:  
+- **VPC and subnets**  
+- **Security Groups**  
+- **EC2** to run Ollama  
+- Network configuration to allow access only from authorized IPs
 
 ---
 
 ## 📋 Requirements
 
-Before running this project, make sure you have:
-
-- An active **AWS account**.
-- A **Deep Learning AMI** compatible with GPU instances.
-- An **EC2 instance** of type `g6.xlarge` (or higher recommended).
-- **Ollama** installed on the server.
+- Active **AWS account** with sufficient permissions to create infrastructure (EC2, VPC, Security Groups, IAM).  
 - **Git** to clone the repository.
-- **Python 3.10+** (optional, for scripts or automation).
-- **Docker** (optional, if you plan to containerize the service).
 
 ---
 
-## 🔑 AWS Environment Variables
+## 🔑 AWS and Terraform Setup
 
-Export your AWS credentials and region before running the project:
+Before running the scripts, export your credentials and apply the infrastructure with Terraform:
 
 ```bash
+# Export your AWS credentials
 export AWS_ACCESS_KEY_ID="your-access-key-id"
 export AWS_SECRET_ACCESS_KEY="your-secret-access-key"
 export AWS_REGION="us-east-1"
+
+# Initialize Terraform
+terraform init
+
+# Apply the infrastructure (create VPC, Security Groups, EC2, etc.)
+terraform apply
+
 ```
-
-These variables allow the infrastructure scripts to authenticate and deploy resources in AWS.
-
----
-
-## 🚀 Installation & Setup
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/your-username/ollama-devops.git
-   cd ollama-devops
-   ```
-
-2. Launch an EC2 instance on AWS using the Deep Learning AMI.
-
-3. Install Ollama on the instance:
-
-   ```bash
-    curl -fsSL https://ollama.com/install.sh | sh
-   ```
-
-4. Pull the gpt-oss-20b model:
-
-   ```bash
-    ollama pull gpt-oss-20b
-   ```
-
-5. Start the Ollama server:
-
-   ```bash
-   ollama serve
-   ```
-
----
-
-## 🧪 Testing
-
-Run the model directly:
-
+After applying Terraform, the output will include the public IP of your Ollama server:
 ```bash
-ollama run gpt-oss-20b
+Outputs:
+
+ollama_server_ip = "52.50.2.24" # example
 ```
-
----
-
-## 📂 Project Structure
-
+## 🧪 Ejemplo de uso de la API con Python
+```python
+from openai import OpenAI
+ 
+# Reemplaza <OLLAMA_IP> con la IP que obtuviste de Terraform
+client = OpenAI(
+    base_url="http://<OLLAMA_IP>:11434/v1",  # Local Ollama API
+    api_key="ollama"                         # Dummy key
+)
+ 
+response = client.chat.completions.create(
+    model="gpt-oss:20b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain what MXFP4 quantization is."}
+    ]
+)
+ 
+print(response.choices[0].message.content)
 ```
-ollama-devops/
-│── docs/ # Additional documentation
-│── scripts/ # Automation and infrastructure scripts
-│── terraform/ # IaC configuration (if using Terraform)
-│── docker/ # Container-related files
-│── README.md
-```
-
----
-
-## 📄 License
-
-This project is for personal and educational purposes. Feel free to adapt and extend it.

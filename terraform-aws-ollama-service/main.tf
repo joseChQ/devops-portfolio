@@ -119,3 +119,7 @@ resource "aws_instance" "ollama_server" {
     Name = "Ollama server"
   }
 }
+
+output "ollama_server_ip" {
+  value = aws_instance.ollama_server.public_ip
+}
