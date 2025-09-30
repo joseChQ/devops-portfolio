@@ -90,14 +90,26 @@ resource "aws_instance" "ollama_server" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod 1777 /tmp",
+      "sleep 140",
       "curl -fsSL https://ollama.com/install.sh | sh",
-      "ollama pull gpt-oss:20b",
       "sudo mkdir -p /etc/systemd/system/ollama.service.d",
-      "echo '[Service]' | sudo tee /etc/systemd/system/ollama.service.d/override.conf",
-      "echo 'Environment=\"OLLAMA_HOST=0.0.0.0:11434\"' | sudo tee -a /etc/systemd/system/ollama.service.d/override.conf",
-      "echo 'Environment=\"OPENAI_API_KEY=ollama\"' | sudo tee -a /etc/systemd/system/ollama.service.d/override.conf",
+      <<-EOF
+        sudo tee /etc/systemd/system/ollama.service.d/override.conf << EOL
+        [Service]
+        Environment="OLLAMA_HOST=0.0.0.0:11434"
+        Environment="OPENAI_API_KEY=ollama"
+        Environment="OLLAMA_CONTEXT_LENGTH=120000"
+        EOL
+      EOF
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
       "sudo systemctl daemon-reload",
+      "sudo systemctl enable ollama",
       "sudo systemctl restart ollama.service",
+      "ollama pull gpt-oss:20b",
     ]
   }
 
