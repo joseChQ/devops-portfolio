@@ -41,11 +41,11 @@ Outputs:
 
 ollama_server_ip = "52.50.2.24" # example
 ```
-## 🧪 Ejemplo de uso de la API con Python
+## 🧪 Example of using the API with Python
 ```python
 from openai import OpenAI
  
-# Reemplaza <OLLAMA_IP> con la IP que obtuviste de Terraform
+# Replace <OLLAMA_IP> with the IP you got from Terraform
 client = OpenAI(
     base_url="http://<OLLAMA_IP>:11434/v1",  # Local Ollama API
     api_key="ollama"                         # Dummy key
